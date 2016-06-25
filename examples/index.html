@@ -1,0 +1,75 @@
+<!doctype HTML>
+<html>
+<head>
+  <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css"></link>
+  <link rel="stylesheet" href="../css/pyret.css"></link>
+
+  <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+  <script src="../node_modules/codemirror/addon/selection/mark-selection.js"></script>
+  <script src="../node_modules/codemirror/addon/runmode/runmode.js"></script>
+  <script src="../mode/pyret.js"></script>
+  <script src="../addon/pyret-fold.js"></script>
+  <script src="../addon/matchkw.js"></script>
+  <style>
+html, body {
+  height: 80%;
+  width: 80em;
+}
+#editor {
+  width: 60em;
+  height: 100%;
+}
+.CodeMirror {
+  height: 100%;
+}
+  </style>
+</head>
+<body>
+<div id="editor">
+</div>
+</body>
+<script>
+var pyretCM = CodeMirror(document.getElementById("editor"), {
+  extraKeys: {
+    "Tab": "indentAuto"
+  },
+  matchKeywords: true,
+  matchBrackets: true,
+  value:
+"data Tree<a>:\n" +
+"  | leaf\n" +
+"  | node(v :: a, left :: Tree<a>, right :: Tree<a>)\n" +
+"end\n" +
+"\n" +
+"# This function will be used below\n" +
+"fun is-odd(n): num-modulo(n, 2) == 1 end\n" +
+"\n" +
+"fun f(x :: Number%(is-odd)):\n" +
+"  x * x\n" +
+"where:\n" +
+"  f(4) raises ''\n" +
+"  f(5) is 25\n" +
+"end\n" +
+"\n" +
+"y = 'a short literal string'\n" +
+"x = ```\n" +
+" a long\n" +
+" literal string\n" +
+"    ```\n" +
+"z = true and (false or not(false))\n" +
+"\n" +
+"a-tree = node(5,\n" +
+"  node(4, leaf, leaf),\n" +
+"  node(6,\n" +
+"    node(7, leaf, leaf),\n" +
+"    node(8, leaf, leaf)))\n" +
+"\n" +
+"another-tree = node(\n" +
+"  [list:\n" +
+"    { x: 5, y: 10 },\n" +
+"    { x: 11, y: 12}],\n" +
+"  leaf,\n" +
+"  leaf)\n"
+});
+</script>
+</html>
