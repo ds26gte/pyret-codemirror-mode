@@ -4,9 +4,6 @@
   "dependencies": {
     "codemirror": "^5.x"
   },
-  "scripts": {
-    "build": "make"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/brownplt/pyret-codemirror-mode"
