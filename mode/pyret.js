@@ -604,6 +604,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
       }
     } else if (state.lastToken === "provide") {
       ls.tokens.push("PROVIDE");
+      ls.deferedOpened.s++;
     } else if (state.lastToken === "sharing") {
       ls.curClosed.d++; ls.deferedOpened.s++;
       ls.delimType = pyret_delimiter_type.SUBKEYWORD;
@@ -836,6 +837,9 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
         ls.tokens.pop();
         top = peek(ls.tokens);
       }
+    } else if (state.lastToken === "*" && hasTop(ls.tokens, ["PROVIDE"])) {
+      ls.deferedClosed.s++;
+      ls.tokens.pop();
     }
     if (stream.match(/\s*$/, false)) { // End of line; close out nestings fields
       // console.log("We think we're at an end of line");
