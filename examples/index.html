@@ -27,7 +27,9 @@ html, body {
 <body>
 <div id="editor">
 </div>
+<button onclick="reindentAll(pyretCM)">Reindent All</button>
 </body>
+<script src="utils.js"></script>
 <script>
 var pyretCM = CodeMirror(document.getElementById("editor"), {
   extraKeys: {
@@ -71,5 +73,6 @@ var pyretCM = CodeMirror(document.getElementById("editor"), {
 "  leaf,\n" +
 "  leaf)\n"
 });
+registerReindentOnPaste(pyretCM);
 </script>
 </html>
