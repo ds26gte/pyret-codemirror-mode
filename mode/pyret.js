@@ -26,7 +26,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
   const pyret_openers_closed_by_end = {"FUN": true, "WHEN": true, "DO": true,
     "FOR": true, "IF": true, "BLOCK": true, "LET": true, "TABLE": true,
     "LOADTABLE": true, "SELECT": true, "EXTEND": true, "SIEVE": true, "TRANSFORM": true, "EXTRACT": true,
-    "ORDER": true, "REACTOR": true}
+    "ORDER": true, "REACTOR": true};
   const pyret_keywords =
     wordRegexp(["else if"].concat(pyret_opening_keywords_nocolon, pyret_closing_keywords,
                ["var", "rec", "import", "include", "provide", "type", "newtype",
@@ -52,7 +52,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
                               "is-roughly": true, "is-not": true, "is-not==": true, "is-not=~": true, "is-not<=>": true,
                               "satisfies": true, "violates": true, "raises": true, "raises-other-than": true,
                               "does-not-raise": true, "raises-satisfies": true, "raises-violates": true
-                            }
+                            };
 
   const pyret_delimiter_type = {NONE : 0,         // Not a delimiter token
                                 OPENING : 1,      // Opening token (e.g. "fun", "{")
@@ -157,18 +157,18 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
     const unterminated_string = new RegExp("^[\"\'].*");
 
     var match;
-    if (match = stream.match(dquot_str, true)) {
+    if ((match = stream.match(dquot_str, true))) {
       return ret(state, 'string', match[0], 'string');
-    } else if (match = stream.match(squot_str, true)) {
+    } else if ((match = stream.match(squot_str, true))) {
       return ret(state, 'string', match[0], 'string');
     } else if (stream.match(/^```/, true)) {
       state.tokenizer = tokenStringTriple;
       state.inString = stream.column();
       state.lastToken = '```';
       return state.tokenizer(stream, state);
-    } else if (match = stream.match(unterminated_string, true)) {
+    } else if ((match = stream.match(unterminated_string, true))) {
       return ret(state, 'string', match[0], 'unterminated-string');
-    } else if (match = stream.match(/^\.\.\./, true)) {
+    } else if ((match = stream.match(/^\.\.\./, true))) {
       return ret(state, match[0], match[0], 'builtin');
     }
     // Level 1
@@ -178,25 +178,25 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
         state.dataNoPipeColon = false;
       return ret(state, match[0], match[0], 'builtin');
     }
-    if (match = stream.match(pyret_keywords_hyphen, true)) {
+    if ((match = stream.match(pyret_keywords_hyphen, true))) {
       return ret(state, match[0], match[0], 'keyword');
     }
-    if (match = stream.match(pyret_keywords, true)) {
+    if ((match = stream.match(pyret_keywords, true))) {
       if (match[0] == "data")
         state.dataNoPipeColon = true;
       return ret(state, match[0], match[0], 'keyword');
     }
-    if (match = stream.match(pyret_booleans, true)) {
+    if ((match = stream.match(pyret_booleans, true))) {
       return ret(state, match[0], match[0], 'boolean');
     }
-    if (match = stream.match(pyret_keywords_colon, true)) {
+    if ((match = stream.match(pyret_keywords_colon, true))) {
       if (stream.peek() === ":")
         return ret(state, match[0], match[0], 'keyword');
       else
         return ret(state, 'name', match[0], 'variable');
     }
     // Level 2
-    if (match = stream.match(pyret_indent_regex)) {
+    if ((match = stream.match(pyret_indent_regex))) {
       if (state.lastToken === "|" || state.lastToken === "::" || state.lastToken === "data"
           || state.dataNoPipeColon) {
         state.dataNoPipeColon = false;
@@ -289,28 +289,28 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
             + ", Try " + this.t + ", Except " + this.e + ", Graph " + this.g + ", Parens " + this.p
             + ", Object " + this.o + ", Vars " + this.v + ", Fields " + this.f + ", Initial " + this.i
             + ", Comment depth " + this.comments);
-  }
+  };
   Indent.prototype.copy = function() {
     return new Indent(this.fn, this.c, this.d, this.s, this.t, this.e, this.g,
                       this.p, this.o, this.v, this.f, this.i, this.comments);
-  }
+  };
   Indent.prototype.zeroOut = function() {
     this.fn = this.c = this.d = this.s = this.t = this.e = this.g = this.p = this.o = this.v = this.f = this.i = this.comments = 0;
-  }
+  };
   Indent.prototype.addSelf = function(that) {
     this.fn += that.fn; this.c += that.c; this.d += that.d; this.s += that.s; this.t += that.t; this.e += that.e;
     this.g += that.g; this.p += that.p; this.o += that.o; this.v += that.v; this.f += that.f; this.i += that.i;
     this.comments += that.comments;
     return this;
-  }
-  Indent.prototype.add = function(that) { return this.copy().addSelf(that); }
+  };
+  Indent.prototype.add = function(that) { return this.copy().addSelf(that); };
   Indent.prototype.subSelf = function(that) {
     this.fn -= that.fn; this.c -= that.c; this.d -= that.d; this.s -= that.s; this.t -= that.t; that.e -= that.e;
     this.g -= that.g; this.p -= that.p; this.o -= that.o; this.v -= that.v; this.f -= that.f; this.i -= that.i;
     this.comments -= that.comments;
     return this;
-  }
-  Indent.prototype.sub = function(that) { return this.copy().subSelf(that); }
+  };
+  Indent.prototype.sub = function(that) { return this.copy().subSelf(that); };
 
   function LineState(tokens,
                      nestingsAtLineStart, nestingsAtLineEnd,
@@ -329,7 +329,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
                          this.nestingsAtLineStart.copy(), this.nestingsAtLineEnd.copy(),
                          this.deferedOpened.copy(), this.curOpened.copy(),
                          this.deferedClosed.copy(), this.curClosed.copy(), this.delimType);
-  }
+  };
   LineState.prototype.print = function() {
     console.log("LineState is:");
     console.log("  NestingsAtLineStart = " + this.nestingsAtLineStart);
@@ -339,7 +339,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
     console.log("  CurOpened = " + this.curOpened);
     console.log("  CurClosed = " + this.curClosed);
     console.log("  Tokens = " + this.tokens);
-  }
+  };
 
   function peek(arr) { return arr[arr.length - 1]; }
   function hasTop(arr, wanted) {
@@ -869,7 +869,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
              commentNestingDepth: oldState.commentNestingDepth, inString: oldState.inString,
              dataNoPipeColon: oldState.dataNoPipeColon,
              sol: oldState.sol
-           }
+           };
   }
 
   function indent(state, textAfter, fullLine) {
