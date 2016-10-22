@@ -20,7 +20,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
                                           "cases", "data", "shared", "check",
                                           "except", "letrec", "lam", "method",
                                           "examples", "do", "select", "extend", "transform", "extract",
-                                          "sieve", "order"];
+                                          "sieve", "order", "provide"];
   const pyret_opening_keywords = pyret_opening_keywords_colon.concat(pyret_opening_keywords_nocolon);
   const pyret_opening_tokens = pyret_opening_keywords.map(toToken("keyword"));
   const pyret_openers_closed_by_end = {"FUN": true, "WHEN": true, "DO": true,
@@ -29,7 +29,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
     "ORDER": true, "REACTOR": true};
   const pyret_keywords =
     wordRegexp(["else if"].concat(pyret_opening_keywords_nocolon, pyret_closing_keywords,
-               ["var", "rec", "import", "include", "provide", "type", "newtype",
+               ["var", "rec", "import", "include", "type", "newtype",
                 "from", "lazy", "shadow", "ref", "of",
                 "and", "or", "as", "else", "cases", "is==", "is=~", "is<=>", "is", "satisfies", "raises",
                 "violates", "by", "ascending", "descending", "sanitize", "using"]));
@@ -84,7 +84,8 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
   // Tokens with closing tokens other than "end" or ";"
   const pyret_special_delimiters = [{start: "(", end: ")"},
                                     {start: "[", end: "]"},
-                                    {start: "{", end: "}"}];
+                                    {start: "{", end: "}"},
+                                    {start: "provide", end: "*"}];
 
   function ret(state, tokType, content, style) {
     state.lastToken = tokType; state.lastContent = content;
@@ -604,6 +605,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
       }
     } else if (state.lastToken === "provide") {
       ls.tokens.push("PROVIDE");
+      ls.delimType = pyret_delimiter_type.OPENING;
       ls.deferedOpened.s++;
     } else if (state.lastToken === "sharing") {
       ls.curClosed.d++; ls.deferedOpened.s++;
@@ -778,7 +780,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
       var stillUnclosed = true;
       while (stillUnclosed && ls.tokens.length) {
         // Things that are not counted at all:
-        //   provide, wantcolon, wantcolonorequal, needsomething, wantopenparen
+        //   wantcolon, wantcolonorequal, needsomething, wantopenparen
         // Things that are counted but not closable by end:
         if (top === "OBJECT" || top === "ARRAY") {
           if (ls.curOpened.o > 0) ls.curOpened.o--;
@@ -796,6 +798,10 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
           if (ls.curOpened.v > 0) ls.curOpened.v--;
           else if (ls.deferedOpened.v > 0) ls.deferedOpened.v--;
           else ls.curClosed.v++;
+        } else if (top === "PROVIDE") {
+          if (ls.curOpened.s > 0) ls.curOpened.s--;
+          else if (ls.deferedOpened.s > 0) ls.deferedOpened.s--;
+          else ls.curClosed.s++;
         }
         // Things that are counted, and closable by end:
         else if (pyret_openers_closed_by_end[top] === true) {
@@ -839,6 +845,7 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
       }
     } else if (state.lastToken === "*" && hasTop(ls.tokens, ["PROVIDE"])) {
       ls.deferedClosed.s++;
+      ls.delimType = pyret_delimiter_type.CLOSING;
       ls.tokens.pop();
     }
     if (stream.match(/\s*$/, false)) { // End of line; close out nestings fields
