@@ -115,6 +115,11 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
       }
     }
 
+    if (ch === ';') {
+      stream.skipToEnd();
+      return ret(state, 'COMMENT', state.lastContent, 'comment');
+    }
+
     if (ch === "'") {
       if (stream.match("'", true)) {
         return ret(state, "'", "'", 'builtin');
