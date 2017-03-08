@@ -109,10 +109,10 @@ CodeMirror.defineMode("pyret", function(config, parserConfig) {
         state.tokenizer = tokenizeBlockComment;
         state.commentNestingDepth = 1;
         return ret(state, "COMMENT-START", state.lastContent, 'comment');
-      } else {
+      } /* else {
         stream.skipToEnd();
         return ret(state, "COMMENT", state.lastContent, 'comment');
-      }
+      } */
     }
 
     if (ch === ';') {
